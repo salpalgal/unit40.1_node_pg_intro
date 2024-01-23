@@ -11,7 +11,6 @@ router.get("/:id", async function(req,res,next){
     try{
         const id = req.params.id
         const results = await db.query("SELECT * FROM invoices AS i INNER JOIN companies AS c ON (i.comp_code = c.code) WHERE id=$1",[id])
-        // console.log(results.rows)
         if(results.rows[0]){
             return res.json({invoice:results.rows[0]})
         }else{
