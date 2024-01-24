@@ -9,7 +9,7 @@ let db = require("../db");
 beforeEach(async function(){
     let companies = db.query(`INSERT INTO companies (code, name, description) VALUES($1, $2, $3) RETURNING *`,['apple', 'Apple Computer', 'Maker of OSX.']);
     let invoices =  db.query("INSERT INTO invoices (comp_code,amt) VALUES ($1,$2) RETURNING *",['apple', 100]);
-    let promises = await Promise.all([invoices,companies])
+     await Promise.all([invoices,companies])
 });
 
 afterEach(async function(){

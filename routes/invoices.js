@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db")
+const moment = require("moment")
 
 router.get("/", async function(Req,res,next){
     const results = await db.query('SELECT * FROM invoices')
@@ -32,9 +33,22 @@ router.post("/", async function(req,res,next){
 })
 router.put('/:id', async function(req,res,next){
     try{
+        let date = moment().format("YYYY-MM-DD")
+       
+        let results;
         const {id} = req.params
-        const {amt} = req.body
-        const results = await db.query("UPDATE invoices SET amt=$1 WHERE id=$2 RETURNING *",[amt,id]);
+        const {amt, paid} = req.body
+        if(paid === true){
+            paid_date = date
+            results = await db.query("UPDATE invoices SET amt=$1, paid_date=$2, paid=$3 WHERE id=$4 RETURNING *",[amt, paid_date ,paid, id]);
+        }
+        if(paid === false){
+            paid_date = null
+            results = await db.query("UPDATE invoices SET amt=$1, paid_date=$2, paid=$3 WHERE id=$4 RETURNING *",[amt, paid_date ,paid, id]);
+        }if(!paid){
+            results = await db.query("UPDATE invoices SET amt=$1  WHERE id=$2 RETURNING *",[amt,id]);
+        }
+        
         if(results.rows[0]){
             return res.json({invoice:results.rows[0]})
         }else{
