@@ -8,7 +8,7 @@ let db = require("../db");
 
 beforeEach(async function(){
     let companies = db.query(`INSERT INTO companies (code, name, description) VALUES($1, $2, $3) RETURNING *`,['apple', 'Apple Computer', 'Maker of OSX.']);
-    let invoices =  db.query("INSERT INTO invoices (comp_code,amt) VALUES ($1,$2) RETURNING *",['apple', 100]);
+    let invoices =  db.query("INSERT INTO invoices (id,comp_code,amt) VALUES ($1,$2,$3) RETURNING *",[1,'apple', 100]);
      await Promise.all([invoices,companies])
 });
 
@@ -23,6 +23,12 @@ afterAll(async function(){
 describe("GET /invoices", function(){
     test("get all invoices", async function(){
         const resp = await request(app).get("/invoices")
+        expect(resp.statusCode).toBe(200)
+    })
+})
+describe("GET /invoices:id", function(){
+    test("get invoice with id in param", async function(){
+        const resp = await request(app).get("/invoices/1")
         expect(resp.statusCode).toBe(200)
     })
 })
